@@ -9,6 +9,23 @@ leverage, sector clustering, and scenario losses.
 > **Beta · not investment advice · no warranty.** Please read
 > [DISCLAIMER.md](DISCLAIMER.md) before using.
 
+## Why this exists
+
+AI assistants are genuinely useful for thinking through your portfolio — but using
+them means a real dilemma: to get useful help, you have to hand over your holdings,
+your account values, sometimes your account numbers. That data then lives in a chat
+log, on someone else's servers, tied to your identity. For your **finances**,
+that's a lot to give up for a second opinion.
+
+This gateway removes the dilemma. It connects to your brokerage **locally** and
+strips every identifying detail before the AI ever sees anything: account numbers
+become anonymous tokens, every dollar figure becomes a percentage of your
+portfolio, and your name and balances never leave your machine. The assistant sees
+the *shape* of your portfolio — concentration, leverage, risk structure — and can
+reason about it usefully, but it never sees *whose* portfolio it is or *how much*
+money is involved. You get the AI's help without handing over your financial
+identity.
+
 ## How it protects your data
 
 - **De-identification happens locally.** Raw broker data never leaves your
@@ -74,6 +91,16 @@ risk; any financial decision is your own.
   futures-option positions show in weight/NAV but with zero greeks.
 - **Greeks are model values.** Option greeks are Black-Scholes fits to each
   option's mark, close to but not identical to a broker's published greeks.
+
+## From the author
+
+This gateway grows out of the same thinking as my book,
+**_Get Rich the Boring Way_** — a practical, no-hype approach to building wealth
+around five simple pillars: earning, saving, investing, managing debt, and
+retirement. If the disciplined, privacy-respecting approach here resonates with
+you, the book is where the whole philosophy lives.
+
+**[Get the book →](https://www.wealthfinancialsystems.com/book)**
 
 ## Feedback
 
