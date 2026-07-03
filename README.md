@@ -1,5 +1,7 @@
 # Portfolio Risk Gateway — Public Beta
 
+*By Bobby Malik, author of [Get Rich the Boring Way](https://www.wealthfinancialsystems.com/book) — a no-hype guide to building wealth.*
+
 A local tool that lets an AI assistant analyze your **options portfolio risk**
 without ever seeing your name, account number, or dollar balances. It connects to
 your brokerage, de-identifies everything on your own machine, and exposes only
