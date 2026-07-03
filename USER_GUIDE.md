@@ -50,12 +50,59 @@ Claude (or anything else) sees it.
 4. **Connect a broker:**
    - **tastytrade:** at my.tastytrade.com → My Profile → API, create a read-only
      OAuth app; paste the client secret and refresh token when the wizard asks.
-   - **SnapTrade:** get a free Personal key at dashboard.snaptrade.com, paste the
-     client id + consumer key, then connect your brokerage(s) in the SnapTrade
-     dashboard. Verify with:
-     ```bash
-     deid-gateway-snaptrade accounts
-     ```
+   - **SnapTrade:** see the step-by-step below.
+
+### Setting up SnapTrade (free, connects 20+ brokerages)
+
+**What it is.** SnapTrade is a service that securely links your brokerage account
+to apps like this one. Rather than this gateway asking for your brokerage password,
+you log in on your broker's own site and grant a **read-only** connection. For
+personal use it's **free**, and you use your own SnapTrade key, so the connection
+is entirely yours.
+
+**Connect it, step by step:**
+
+1. **Create a free SnapTrade account** at https://dashboard.snaptrade.com.
+2. **Verify your email.** You can't generate a key until your account is verified —
+   click the link in the verification email first.
+3. **Generate your free API key** in the dashboard. It's two values: a **Client ID**
+   and a **Consumer Key** (the Consumer Key is a secret — treat it like a password).
+4. **Give the key to the gateway.** When `deid-gateway-setup` asks, paste the Client
+   ID and Consumer Key. That's all this gateway needs. (SnapTrade's developer docs
+   mention a "register user / user secret" step — that's for companies building apps
+   for *other* people; connecting your *own* accounts doesn't need it.)
+5. **Connect your brokerage.** In SnapTrade's connection flow you'll accept
+   SnapTrade's terms (first time only), get redirected to your **broker's own login
+   page**, sign in there, and authorize a read-only link — then land back. You can
+   connect more than one broker.
+6. **Confirm it worked:**
+   ```bash
+   deid-gateway-snaptrade accounts
+   ```
+   It should list the accounts you connected.
+
+**Is it safe to connect my brokerage?** Two separate protections are worth
+understanding:
+
+- **The broker link (handled by SnapTrade).** You never give this gateway your
+  brokerage password — you log in on your broker's own site via a scoped, read-only
+  OAuth connection, and you can revoke it anytime from the SnapTrade dashboard.
+  SnapTrade describes its own security (encryption, SOC 2 Type 2) on its site;
+  see https://snaptrade.com for their current details.
+- **The AI privacy (handled by this gateway).** Separately, this gateway
+  de-identifies everything on your machine before the AI sees it — your account
+  numbers become tokens and your dollar amounts become percentages. So even the
+  read-only data SnapTrade provides is stripped of identity before any assistant
+  sees it.
+
+**Read-only, always.** This gateway requests read-only access — it can see
+positions and balances, and it *cannot place trades*, regardless of what SnapTrade
+or your broker may otherwise support.
+
+> A newly linked brokerage can take until SnapTrade's next daily sync to appear in
+> the account list; its holdings are real-time once linked. SnapTrade occasionally
+> changes its dashboard and portal, so if a screen looks different, follow the
+> official guide at https://docs.snaptrade.com.
 
 5. *(Optional) Add your WFS subscription* for the deterministic engine:
    ```bash
@@ -166,7 +213,6 @@ re-pull.
 
 | | Free | WFS subscription |
 |---|------|------------------|
-| Private broker connection | ✅ | ✅ |
 | De-identified metrics | ✅ | ✅ |
 | Claude AI risk interpretation | ✅ | ✅ |
 | Deterministic 0–100 risk score | — | ✅ |
