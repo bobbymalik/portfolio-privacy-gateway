@@ -1,0 +1,33 @@
+[project]
+name = "deid-gateway"
+version = "0.1.0"
+description = "Local MCP gateway that de-identifies brokerage data before it reaches AI tools"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+# Core: needed for the default flow (wizard, secrets CLI, server, audit log).
+# keyring -> keychain-backed secrets (the wizard's default source)
+# cryptography -> Fernet-encrypted audit log
+dependencies = ["mcp>=1.2", "cryptography>=42", "keyring>=24"]
+
+[project.optional-dependencies]
+# Broker SDKs are optional -- install the one(s) you connect.
+# (SnapTrade's free Personal path needs NO SDK; only the Commercial path does.)
+tastytrade = ["tastytrade>=12"]
+snaptrade = ["snaptrade-python-sdk>=11"]
+aws = ["boto3>=1.34"]                       # only for the AWS secret source
+dev = ["pytest"]
+keychain = ["keyring>=24"]                  # back-compat alias (keyring is now core)
+all = ["tastytrade>=12", "snaptrade-python-sdk>=11", "boto3>=1.34"]
+
+[project.scripts]
+deid-gateway = "deid_gateway.server:main"
+deid-gateway-secrets = "deid_gateway.secrets:_cli"
+deid-gateway-setup = "deid_gateway.setup_wizard:main"
+deid-gateway-snaptrade = "deid_gateway.snaptrade_cli:main"
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["deid_gateway"]
