@@ -74,12 +74,18 @@ class SnapTradeBroker:
             units, price = float(e["units"]), float(e["price"])
             mv = units * price
             gross += mv
-            positions.append({
+            pos = {
                 "symbol": e["ticker"], "underlying": e["ticker"].upper(),
                 "instrument_type": "Equity", "quantity": units,
                 "underlying_price": price, "market_value": mv,
                 "delta": 1.0, "gamma": 0.0, "theta": 0.0, "vega": 0.0,
-            })
+            }
+            # Forward broker's security description when populated -- the
+            # backend enrichment layer uses this to classify broker-internal
+            # tickers by name (e.g. ONN5 -> "VANG INST 500 IDX TR").
+            if e.get("description"):
+                pos["name"] = e["description"]
+            positions.append(pos)
 
         today = _dt.date.today()
         for o in options:
@@ -192,10 +198,17 @@ def _personal_adapter(client_id, consumer_key):
         def equity_positions(self, account_id):
             out = []
             for p in sign.get(f"/accounts/{account_id}/positions"):
-                sym = (((p.get("symbol") or {}).get("symbol") or {}).get("symbol")) or ""
+                inner = (p.get("symbol") or {}).get("symbol") or {}
+                sym = inner.get("symbol") or ""
+                # SnapTrade's `description` field carries the broker-provided
+                # security name (e.g. "VANG INST 500 IDX TR" for ONN5).
+                # Forwarded so the backend enrichment layer can classify
+                # broker-internal share-class tickers by their name via Claude.
+                desc = inner.get("description") or ""
                 if sym:
                     out.append({"ticker": sym, "units": p.get("units") or 0.0,
-                                "price": p.get("price") or 0.0})
+                                "price": p.get("price") or 0.0,
+                                "description": desc})
             return out
 
         def option_positions(self, account_id):
@@ -300,10 +313,13 @@ def from_sdk(client_id: str, consumer_key: str, user_id: str | None = None,
         def equity_positions(self, account_id):
             out = []
             for p in _positions(account_id):
-                sym = (((p.get("symbol") or {}).get("symbol") or {}).get("symbol")) or ""
+                inner = (p.get("symbol") or {}).get("symbol") or {}
+                sym = inner.get("symbol") or ""
+                desc = inner.get("description") or ""
                 if sym:
                     out.append({"ticker": sym, "units": p.get("units") or 0.0,
-                                "price": p.get("price") or 0.0})
+                                "price": p.get("price") or 0.0,
+                                "description": desc})
             return out
 
         def option_positions(self, account_id):

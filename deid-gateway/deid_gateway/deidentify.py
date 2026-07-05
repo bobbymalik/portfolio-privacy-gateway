@@ -50,6 +50,12 @@ ALLOWED_POSITION_KEYS = {
     "vega_pct_per_vol_point",
     "beta",
     "sector",
+    # Optional broker-provided security description (e.g. "VANG INST 500 IDX TR").
+    # Public information -- fund names appear on Morningstar/Bloomberg/broker
+    # websites -- but forwarded so the AWS enrichment layer can classify
+    # broker-internal share-class tickers via Claude (backend sanitizes before
+    # including in prompts).
+    "name",
 }
 
 # Fields on the raw record that must NEVER appear in output, in any form.
@@ -116,7 +122,7 @@ def deidentify_snapshot(raw: dict, secret: str) -> dict:
         if ref["known"]:
             known_gross += abs(mv)
 
-        positions_out.append({
+        pos_out = {
             "symbol": p["symbol"],
             "underlying": p["underlying"],
             "instrument_type": p["instrument_type"],
@@ -127,7 +133,16 @@ def deidentify_snapshot(raw: dict, secret: str) -> dict:
             "vega_pct_per_vol_point": pct(vega),
             "beta": ref["beta"],
             "sector": ref["sector"],
-        })
+        }
+        # Forward broker description when populated. Truncated + control
+        # chars stripped so a malformed broker payload can't inject into
+        # downstream log or prompt sinks.
+        raw_name = p.get("name") or ""
+        if isinstance(raw_name, str) and raw_name.strip():
+            clean = "".join(c for c in raw_name if ord(c) >= 32 and c != "\x7f")
+            if clean.strip():
+                pos_out["name"] = clean.strip()[:128]
+        positions_out.append(pos_out)
 
     weights = sorted((100.0 * v / nav for v in by_underlying.values()), reverse=True)
     top1 = round(weights[0], 4) if weights else 0.0
