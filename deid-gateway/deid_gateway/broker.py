@@ -18,9 +18,9 @@ def _run_async(coro_factory: Callable):
     """Run an async coroutine to completion whether or not an event loop is
     already running in this thread.
 
-    FastMCP calls sync tool functions from inside its own event loop, where
-    asyncio.run() raises "cannot be called from a running event loop". In that
-    case we run the coroutine in a dedicated worker thread with its own loop.
+    The MCP server may call sync tool functions from inside its own event loop,
+    where asyncio.run() raises "cannot be called from a running event loop". In
+    that case we run the coroutine in a dedicated worker thread with its own loop.
     """
     import concurrent.futures
 
@@ -124,8 +124,8 @@ class TastytradeBroker:
         self._refresh = refresh_token       # falls back to $TT_REFRESH inside Session
 
     def fetch_snapshots(self) -> list[dict]:
-        # FastMCP invokes sync tools from inside its own running event loop, so a
-        # bare asyncio.run() would raise. _run_async handles both cases.
+        # The MCP server may invoke sync tools from inside its own running event
+        # loop, so a bare asyncio.run() would raise. _run_async handles both cases.
         return _run_async(self._fetch_async)
 
     async def _fetch_async(self) -> list[dict]:

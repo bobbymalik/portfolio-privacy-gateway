@@ -10,8 +10,9 @@ Run directly:   python -m deid_gateway.server
 from __future__ import annotations
 
 import sys
+from importlib.metadata import PackageNotFoundError, version
 
-from mcp.server.fastmcp import FastMCP
+from mcp.server.mcpserver import MCPServer
 
 from .audit import AuditLog
 from .broker import MockBroker, MultiBroker, TastytradeBroker
@@ -20,7 +21,13 @@ from . import local_engine
 from .secrets import SecretStore
 from .service import Gateway
 
-mcp = FastMCP("deid-portfolio-gateway")
+try:
+    _VERSION = version("deid-gateway")
+except PackageNotFoundError:        # running from a source checkout, not installed
+    _VERSION = "0.0.0+source"
+
+# MCPServer defaults version to "", so pass our own -- clients show it in serverInfo.
+mcp = MCPServer("deid-portfolio-gateway", version=_VERSION)
 
 # Resolve everything through the secret store: AWS Secrets Manager when
 # DEID_AWS_SECRET_ID is set, otherwise environment variables. No secret ever

@@ -7,9 +7,9 @@ license = "Apache-2.0"
 # Core: needed for the default flow (wizard, secrets CLI, server, audit log).
 # keyring -> keychain-backed secrets (the wizard's default source)
 # cryptography -> Fernet-encrypted audit log
-# mcp is capped below 2.0: the 2.x SDK renamed mcp.server.fastmcp.FastMCP to
-# mcp.server.mcpserver.MCPServer, so an uncapped install breaks server.py on import.
-dependencies = ["mcp>=1.2,<2", "cryptography>=42", "keyring>=24"]
+# mcp>=2: server.py uses mcp.server.mcpserver.MCPServer, which the 2.0 SDK
+# renamed from mcp.server.fastmcp.FastMCP. It does not exist on the 1.x line.
+dependencies = ["mcp>=2", "cryptography>=42", "keyring>=24"]
 
 [project.optional-dependencies]
 # Broker SDKs are optional -- install the one(s) you connect.
