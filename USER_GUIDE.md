@@ -20,8 +20,9 @@ Claude (or anything else) sees it.
 
 ## 2. Install
 
-1. **Download** the release zip for your platform from the Releases page and unzip
-   it somewhere permanent (e.g. `~/wfs-gateway`).
+1. **Download** `gateway.zip` from the Releases page and unzip it somewhere
+   permanent (e.g. `~/wfs-gateway`). One zip works on macOS and Windows both —
+   the gateway is pure Python, so there is nothing compiled per-platform.
 
    *Working from a git clone instead?* The Python package lives one level down, so
    use `cd portfolio-privacy-gateway/deid-gateway` — the folder holding

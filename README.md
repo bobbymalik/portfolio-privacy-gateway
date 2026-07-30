@@ -74,9 +74,9 @@ risk; any financial decision is your own.
 
 ## Install
 
-1. Download the release zip for your platform (macOS Apple Silicon, macOS Intel,
-   or Windows) from the Releases page — or clone this repo and `cd deid-gateway`,
-   the folder that holds `pyproject.toml`.
+1. Download `gateway.zip` from the Releases page — one zip covers macOS and
+   Windows alike, since the gateway is pure Python. Or clone this repo and
+   `cd deid-gateway`, the folder that holds `pyproject.toml`.
 2. Follow [INSTALL.md](INSTALL.md) — create a virtual environment,
    `pip install -e .`, then run `deid-gateway-setup` and follow the prompts.
 3. Connect your assistant, then start a new chat and ask it to run a risk

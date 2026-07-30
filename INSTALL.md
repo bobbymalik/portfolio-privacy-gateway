@@ -11,8 +11,9 @@ Requirements: Python 3.10+ and (for the keychain) a desktop login session.
 
 ## 1. Get the code
 
-**From the release zip** (recommended) -- download the zip for your platform from
-the Releases page and unzip it somewhere permanent (e.g. `~/wfs-gateway`).
+**From the release zip** (recommended) -- download `gateway.zip` from the Releases
+page and unzip it somewhere permanent (e.g. `~/wfs-gateway`). There is one zip for
+every platform: the gateway is pure Python, so nothing is compiled per-OS.
 `pyproject.toml` sits at the top level of the unzipped folder, so install from
 there directly.
 
