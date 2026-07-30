@@ -1,6 +1,6 @@
 [project]
 name = "deid-gateway"
-version = "0.1.1"
+version = "0.1.2"
 description = "Local MCP gateway that de-identifies brokerage data before it reaches AI tools"
 requires-python = ">=3.10"
 license = "Apache-2.0"

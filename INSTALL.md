@@ -63,6 +63,8 @@ found", activate `.venv` first.
 - generates a strong gateway secret and stores it in your OS keychain,
 - collects that broker's **read-only** credentials and stores them in the keychain,
 - registers the gateway in your `claude_desktop_config.json` (a backup is kept),
+- writes an `mcp.json` next to your install, with your interpreter path filled
+  in, for the clients it can't register itself (Claude Code, Amazon Quick),
 - checks that the engine binary and reference data loaded.
 
 **tastytrade:** create the credentials at my.tastytrade.com → My Profile → API:
@@ -94,7 +96,13 @@ three clients below need the same three things:
 | **Arguments** | `-m deid_gateway.server` |
 | **Env** | `DEID_BROKER`, `DEID_SECRETS_SOURCE=keychain` |
 
-Get the exact command path with the venv activated:
+**You do not have to work any of this out by hand.** `deid-gateway-setup` writes
+an `mcp.json` next to your install with your real interpreter path already filled
+in, and prints the exact `claude mcp add` command and the JSON block to paste into
+Quick. Re-run the wizard any time to regenerate it (the previous file is backed
+up).
+
+If you do need the interpreter path yourself, with the venv activated:
 
 ```bash
 python -c "import sys; print(sys.executable)"
@@ -102,14 +110,18 @@ python -c "import sys; print(sys.executable)"
 # Windows     -> C:\Users\you\wfs-gateway\.venv\Scripts\python.exe
 ```
 
+Note the venv lives at the **top level of your install** — in the unzipped
+release folder that is `<unzipped>/.venv/`, and in a git clone it is
+`deid-gateway/.venv/`. There is no `deid-gateway/` folder inside the release zip.
+
 `DEID_BROKER` accepts `tastytrade`, `snaptrade`, or `multi` (loads every broker
 you have credentials for -- the safe default). Credentials themselves are **never**
 put in these config files; `DEID_SECRETS_SOURCE=keychain` tells the gateway to read
 them from your OS keychain, where the wizard stored them.
 
-This repo ships [`mcp.json`](mcp.json) as a ready-made config in the standard
-`mcpServers` format. Copy it, replace the `command` placeholder with your venv
-Python path, and point your client at it.
+The [`mcp.json`](mcp.json) in this repo is a *template* — its `command` is a
+placeholder you must replace. The copy the wizard writes next to your install is
+the one to use; it already has the right path.
 
 ### Claude Desktop
 
@@ -136,8 +148,11 @@ claude mcp add deid-portfolio-gateway --scope user \
   -- /ABSOLUTE/PATH/TO/.venv/bin/python -m deid_gateway.server
 ```
 
+The wizard prints this command with your real path substituted — copy it
+from there rather than editing the above.
+
 Use `--scope project` instead to share it via a checked-in `.mcp.json`, or copy
-this repo's `mcp.json` to `.mcp.json` in your project root -- same format, Claude
+the wizard's `mcp.json` to `.mcp.json` in your project root -- same format, Claude
 Code just expects the leading dot.
 
 Verify with `claude mcp list`, or `/mcp` inside a session.
@@ -146,8 +161,8 @@ Verify with `claude mcp list`, or `/mcp` inside a session.
 
 In Quick, open **Add MCP**. Either connection type works.
 
-**Import** (easiest -- reuses `mcp.json`): choose **Import**, and give the
-**Config file path** of your edited copy, e.g.
+**Import** (easiest): choose **Import**, and give the **Config file path** of the
+`mcp.json` the wizard wrote — it prints the full path, typically
 `~/wfs-gateway/mcp.json`. Quick reads the standard `mcpServers` format. If Quick
 already lists Claude Code under *Detected on this system*, you can import that
 config instead and it will pick up the gateway you registered above.
@@ -155,7 +170,7 @@ config instead and it will pick up the gateway you registered above.
 **Local** (fill the form by hand): choose **Local** and enter
 
 - **Name:** `deid-portfolio-gateway`
-- **Command:** `/ABSOLUTE/PATH/TO/.venv/bin/python`
+- **Command:** your venv Python — the wizard prints it; don't guess
 - **Arguments:** `-m deid_gateway.server`
 - **Description:** De-identified portfolio risk analysis — exposes only anonymous
   tokens and ratios, never account numbers or balances.

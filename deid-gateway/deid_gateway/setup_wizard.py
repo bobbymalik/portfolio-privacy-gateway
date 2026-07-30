@@ -36,6 +36,33 @@ def _banner(msg: str) -> None:
     print("\n" + "=" * 64 + f"\n{msg}\n" + "=" * 64)
 
 
+def client_config(broker: str) -> dict:
+    """The standard `mcpServers` block for this install.
+
+    `command` is *this* interpreter, so the caller never has to work out where
+    the virtualenv landed -- the single thing people most often get wrong when
+    wiring up a client by hand.
+    """
+    return {
+        "mcpServers": {
+            SERVER_NAME: {
+                "command": sys.executable,
+                "args": ["-m", "deid_gateway.server"],
+                "env": {"DEID_BROKER": broker, "DEID_SECRETS_SOURCE": "keychain"},
+            }
+        }
+    }
+
+
+def install_root() -> str:
+    """Where to drop mcp.json: the virtualenv's parent, which is the unzipped
+    release folder or, in a git clone, deid-gateway/. Falls back to the working
+    directory when running outside a venv."""
+    if sys.prefix != getattr(sys, "base_prefix", sys.prefix):
+        return os.path.dirname(sys.prefix)
+    return os.getcwd()
+
+
 def main() -> None:
     _banner("De-identification Portfolio Gateway — setup")
     print("This stores credentials in your OS keychain and registers the gateway\n"
@@ -129,7 +156,32 @@ def main() -> None:
               "    deid-gateway-snaptrade accounts\n"
               "  No register/userSecret needed — the Personal key's user is implicit.")
 
-    # 5. summary
+    # 5. config for the clients the wizard can't register itself. Claude Desktop
+    # has a config file we can edit; Claude Code and Amazon Quick do not, so hand
+    # over a ready-to-use file and the exact commands instead of a placeholder.
+    _banner("Other MCP clients (Claude Code, Amazon Quick)")
+    block = client_config(broker)
+    mcp_path = os.path.join(install_root(), "mcp.json")
+    try:
+        if os.path.exists(mcp_path):
+            shutil.copyfile(mcp_path, mcp_path + f".bak.{int(time.time())}")
+        with open(mcp_path, "w") as fh:
+            json.dump(block, fh, indent=2)
+            fh.write("\n")
+        print(f"  wrote {mcp_path}")
+    except OSError as e:
+        print(f"  could not write mcp.json ({e}) -- copy the block below instead")
+        mcp_path = "<your mcp.json>"
+
+    print("\n  Claude Code:")
+    print(f"    claude mcp add {SERVER_NAME} --scope user \\")
+    print(f"      --env DEID_BROKER={broker} --env DEID_SECRETS_SOURCE=keychain \\")
+    print(f"      -- {sys.executable} -m deid_gateway.server")
+    print(f"\n  Amazon Quick:  Add MCP -> Import -> {mcp_path}")
+    print("  (or Add MCP -> Local -> Paste JSON, with:)\n")
+    print(json.dumps(block, indent=2))
+
+    # 6. summary
     _banner("Done")
     print("Keychain status:")
     keys = ["DEID_GATEWAY_SECRET"]

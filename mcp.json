@@ -1,7 +1,7 @@
 {
   "mcpServers": {
     "deid-portfolio-gateway": {
-      "command": "/ABSOLUTE/PATH/TO/deid-gateway/.venv/bin/python",
+      "command": "/ABSOLUTE/PATH/TO/YOUR/.venv/bin/python",
       "args": ["-m", "deid_gateway.server"],
       "env": {
         "DEID_BROKER": "multi",
