@@ -40,7 +40,14 @@ identity.
   percentage of net liquidating value. The AI sees structure, never identity or
   balances.
 - **Deny-by-default egress.** Only an allow-listed set of normalized fields can
-  ever leave the gateway; a PII scan backstops it.
+  ever leave the gateway; a PII scan backstops it. The allow-list is
+  `ALLOWED_POSITION_KEYS` / `ALLOWED_PORTFOLIO_KEYS` in
+  [`deidentify.py`](deid-gateway/deid_gateway/deidentify.py) — read it to see
+  exactly what can egress. It includes the broker's security *description* (e.g.
+  `VANG INST 500 IDX TR`) where the broker supplies one, so that share classes
+  with broker-internal tickers can be classified; these are public fund names,
+  not account identifiers, and they are stripped of control characters and
+  truncated before egress.
 - **Credentials stay in your OS keychain.** You provide your own read-only broker
   API tokens; they're stored by macOS Keychain / Windows Credential Manager, not
   in any config file.
