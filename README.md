@@ -5,7 +5,8 @@ identity.*
 
 *By Bobby Malik, author of [Get Rich the Boring Way](https://www.wealthfinancialsystems.com/book) — a no-hype guide to building wealth.*
 
-An open-source **MCP server for Claude Desktop** (and other MCP clients) that lets
+An open-source **MCP server** — for Claude Desktop, Claude Code, Amazon Quick, or
+any other MCP client — that lets
 an AI assistant analyze your **options portfolio risk** without ever seeing your
 name, account number, or dollar balances. It connects to your brokerage,
 de-identifies everything on your own machine, and exposes only normalized ratios to
@@ -74,20 +75,29 @@ risk; any financial decision is your own.
 ## Install
 
 1. Download the release zip for your platform (macOS Apple Silicon, macOS Intel,
-   or Windows) from the Releases page.
+   or Windows) from the Releases page — or clone this repo and `cd deid-gateway`,
+   the folder that holds `pyproject.toml`.
 2. Follow [INSTALL.md](INSTALL.md) — create a virtual environment,
-   `pip install .`, then run `deid-gateway-setup` and follow the prompts.
-3. Fully quit and reopen Claude Desktop, start a new chat, and ask it to run a
-   risk assessment.
+   `pip install -e .`, then run `deid-gateway-setup` and follow the prompts.
+3. Connect your assistant, then start a new chat and ask it to run a risk
+   assessment.
 
 ## Supported
 
-- **Assistant:** Claude Desktop (tested). Built as a standard MCP server, so
-  other MCP clients (e.g. Claude Code) should work but aren't yet verified.
+- **Assistants:** any MCP client that can launch a local stdio server.
+  [INSTALL.md](INSTALL.md#4-connect-your-assistant) has step-by-step setup for
+  **Claude Desktop** (automatic — the wizard registers it), **Claude Code**
+  (`claude mcp add`), and **Amazon Quick** (Add MCP → Local or Import). The repo
+  ships [`mcp.json`](mcp.json) in the standard `mcpServers` format that all three
+  accept.
 - **Brokers:** tastytrade (read-only OAuth), and 20+ brokerages via a free
   SnapTrade Personal key. Connect one or both; the gateway analyzes each account
   and a combined whole-portfolio view.
 - **Platforms:** macOS (arm64 + Intel), Windows.
+
+Because the gateway reads your credentials from your OS keychain and does the
+de-identification locally, the client must run on the **same machine and user
+account** as the install. There is no hosted/remote mode by design.
 
 ## Known limitations (beta)
 

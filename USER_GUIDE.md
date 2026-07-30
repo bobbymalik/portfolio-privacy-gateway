@@ -23,6 +23,10 @@ Claude (or anything else) sees it.
 1. **Download** the release zip for your platform from the Releases page and unzip
    it somewhere permanent (e.g. `~/wfs-gateway`).
 
+   *Working from a git clone instead?* The Python package lives one level down, so
+   use `cd portfolio-privacy-gateway/deid-gateway` — the folder holding
+   `pyproject.toml` — everywhere this guide says `cd ~/wfs-gateway`.
+
 2. **Create a virtual environment and install:**
    ```bash
    cd ~/wfs-gateway
@@ -114,6 +118,10 @@ or your broker may otherwise support.
 6. **Restart Claude Desktop completely** — Cmd+Q on macOS (right-click tray → Quit
    on Windows), not just closing the window — then reopen it and start a **new
    chat**.
+
+   *Using Claude Code or Amazon Quick instead?* The wizard only registers Claude
+   Desktop. See [INSTALL.md](INSTALL.md#4-connect-your-assistant) for the one-step
+   setup for each, and the ready-made [`mcp.json`](mcp.json) they both accept.
 
 ---
 
